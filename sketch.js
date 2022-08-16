@@ -19,6 +19,7 @@ var ratio = Math.sqrt(2)*0+1;
 //var resx = map(fxrand(), 0, 1,  1000, 1400);
 //var resy = Math.round(1580*1000/resx);
 var resx, resy;
+var resscale = 2400/1400;
 if(fxrand() < -.5){
     resx = 1400;
     resy = Math.round(1400/ratio);
@@ -130,14 +131,15 @@ function setup(){
     //pg.rotateY(accas);
     //mask.rotateY(accas);
 
-    fbo = new p5Fbo({renderer: canvas, width: resx*2, height: resy*2});
-    effectFbo = new p5Fbo({renderer: canvas, width: resx*2, height: resy*2});
-    bhFbo = new p5Fbo({renderer: canvas, width: resx*2, height: resy*2});
-    bvFbo = new p5Fbo({renderer: canvas, width: resx*2, height: resy*2});
+    const pd = pixelDensity();
+    fbo = new p5Fbo({renderer: canvas, width: resx*pd*resscale, height: resy*pd*resscale});
+    effectFbo = new p5Fbo({renderer: canvas, width: resx*pd*resscale, height: resy*pd*resscale});
+    bhFbo = new p5Fbo({renderer: canvas, width: resx*pd*resscale, height: resy*pd*resscale});
+    bvFbo = new p5Fbo({renderer: canvas, width: resx*pd*resscale, height: resy*pd*resscale});
 
     
     fbo.begin();    
-    ortho(-resx/2, resx/2, -resy/2, resy/2, 0, 4444);
+    ortho(-resx/2*resscale, resx/2*resscale, -resy/2*resscale, resy/2*resscale, 0, 4444);
 
     initSim();
 
@@ -167,8 +169,8 @@ function initSim(){
     engine.gravity.y = .07;
 
 
-    for(var k = 0; k < 800; k++){
-        var x = -k/800*400 + 2*(.4+.6*k/800)*400*power(noise(k*.01), 3);
+    for(var k = 0; k < 333; k++){
+        var x = -k/333*400 + 2*(.4+.6*k/333)*400*power(noise(k*.01), 3);
         var y = -50 - dis*k;
         var r = 3 + 2*power(noise(k*0.03, 3314.113), 3);
         r = 5;
@@ -232,11 +234,11 @@ function initSim(){
     grounds.push(ground);
     bandc.push(ground.body);
     var ground = new Ground(-resx / 2, 0, 20, resy, 0, false);
-    grounds.push(ground);
-    bandc.push(ground.body);
+    //grounds.push(ground);
+    //bandc.push(ground.body);
     var ground = new Ground(+resx / 2, 0, 20, resy, 0, false);
-    grounds.push(ground);
-    bandc.push(ground.body);
+    //grounds.push(ground);
+    //bandc.push(ground.body);
 
     //bandc = bodies.concat(constraints)
 
@@ -259,9 +261,9 @@ function initSim(){
 }
 var mouse;
 function runSim() {
-    mouse.position = {'x': (mouseX*1.56-resx/2), 'y': (mouseY*1.56-resy/2)};
+    mouse.position = {'x': map(mouseX, 0, width, -resx/2, resx/2), 'y' :map(mouseY, 0, height, -resy/2, resy/2)};
     Engine.update(engine, 1000 / 60);
-    mouse.position = { 'x': (mouseX*1.56-resx/2), 'y': (mouseY*1.56-resy/2) };
+    mouse.position = { 'x': map(mouseX, 0, width, -resx/2, resx/2), 'y': map(mouseY, 0, height, -resy/2, resy/2) };
 
 }
 var vertFunc;
@@ -329,8 +331,8 @@ function drawSim() {
             var v23 = p5.Vector.sub(p3, p2);
             v12.normalize();
             v23.normalize();*/
-            stroke(.04 + .2 * power(noise(k * 0.03, frameCount * .08), 6));
-            stroke(...map2(1. * power(noise(k * 0.0008, frameCount * .08*0), 6)));
+            //stroke(.04 + .2 * power(noise(k * 0.03, frameCount * .08), 6));
+            //stroke(...map2(1. * power(noise(k * 0.0008, frameCount * .08*0), 6)));
 
             //var col = map2((k * .001) % 1.);
             /*var col = map2(1 * power(noise(k * .000084+frameCount*.001, 595.9), 3));
@@ -341,10 +343,11 @@ function drawSim() {
             stroke(...col3);
             stroke(...map2((round(k * .005) / 5.0) % 1.));
             */
-            stroke(.04 + .2 * power(noise(k * 0.03, frameCount * .08), 6));
             stroke(...map2((k * .001) % 1.));
+            stroke(.04 + .12 * power(noise(k * 0.03, frameCount * .08), 6));
 
             strokeWeight(2 + 5.5 * power(noise(k * 0.03), 3));
+            strokeWeight(5 + 7.5 * power(noise(k * 0.03), 3));
             line(
                 p1.x,
                 p1.y,
@@ -439,7 +442,9 @@ function draw(){
     if(issim){
         fbo.begin();
         clear();
-        ortho(-resx/2, resx/2, -resy/2, resy/2, 0, 4444);
+        ortho(-resx/2*resscale, resx/2*resscale, -resy/2*resscale, resy/2*resscale, 0, 4444);
+        push();
+        scale(resscale);
 
         var bgc = map2(.5);
         bgc = brightencol(bgc, -.3);
@@ -454,7 +459,8 @@ function draw(){
 
         fill(.9, .2, .1);
         noStroke();
-        rect(mouse.position.x, mouse.position.y, 8, 8);
+        //rect(mouse.position.x, mouse.position.y, 8, 8);
+        pop();
 
         fbo.end();
         showall();
@@ -492,7 +498,7 @@ function showall(){
     var dir = [cos(an), sin(an)]
     blurH.setUniform('tex0', fbo.getTexture());
     //blurH.setUniform('tex1', mask);
-    blurH.setUniform('texelSize', [1.0/resx, 1.0/resy]);
+    blurH.setUniform('texelSize', [1.0/resx/resscale, 1.0/resy/resscale]);
     blurH.setUniform('direction', [dir[0], [1]]);
     blurH.setUniform('u_time', frameCount+globalseed*.01);
     blurH.setUniform('amp', .85);
@@ -507,7 +513,7 @@ function showall(){
     
     blurV.setUniform('tex0', bhFbo.getTexture());
     //blurV.setUniform('tex1', mask);
-    blurV.setUniform('texelSize', [1.0/resx, 1.0/resy]);
+    blurV.setUniform('texelSize', [1.0/resx/resscale, 1.0/resy/resscale]);
     blurV.setUniform('direction', [-dir[1], dir[0]]);
     blurV.setUniform('u_time', frameCount+globalseed*.01);
     blurV.setUniform('amp', .85);
@@ -525,7 +531,7 @@ function showall(){
     //effect.setUniform('tex2', blurpass2);
     //effect.setUniform('tex3', bgpg);
     effect.setUniform('u_usemask', 0.);
-    effect.setUniform('u_resolution', [resx, resy]);
+    effect.setUniform('u_resolution', [resx*resscale, resy*resscale]);
     effect.setUniform('u_mouse',[dir[0], dir[1]]);
     effect.setUniform('u_time', frameCount);
     effect.setUniform('incolor', randomtint);

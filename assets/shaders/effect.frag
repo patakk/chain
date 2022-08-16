@@ -146,9 +146,9 @@ void main() {
     //vec2 uvrd = uv - 0.*(1.-uv.y)*1.61*ff*vec2(1., 0.) + 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
     //vec2 uvgd = uv - 0.*1.61*ff*vec2(1., 0.) + 0.*ff*vec2(1., 0.)/u_resolution*2.;
     //vec2 uvbd = uv - 0.*uv.y*1.61*ff*vec2(1., 0.) - 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
-    vec2 uvrd = uv - .9*ff*vec2(1.5, 1.) + 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
-    vec2 uvgd = uv - .9*ff*vec2(1.5, 1.) + 0.*ff*vec2(1., 0.)/u_resolution*2.;
-    vec2 uvbd = uv - .9*ff*vec2(1.5, 1.) - 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
+    vec2 uvrd = uv - .22*ff*vec2(1.5, 1.) + 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
+    vec2 uvgd = uv - .22*ff*vec2(1.5, 1.) + 0.*ff*vec2(1., 0.)/u_resolution*2.;
+    vec2 uvbd = uv - .22*ff*vec2(1.5, 1.) - 0.*333.5*ff*vec2(1., 0.)/u_resolution*2.;
 
     vec4 mask = texture2D(tex2, uvgd) * u_usemask + vec4(1.) * (1.-u_usemask);
     //vec4 maskb = mask;
